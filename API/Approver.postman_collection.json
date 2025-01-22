@@ -1,0 +1,2149 @@
+{
+	"info": {
+		"_postman_id": "fbeb2225-0e57-4d2c-8e26-ead502d3e39c",
+		"name": "Approver",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27979058"
+	},
+	"item": [
+		{
+			"name": "Check User Already Exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Fixed syntax \r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//store sessionId\r",
+							"var resPonse = pm.response.json();\r",
+							"var sessionId = resPonse.sessionId;\r",
+							"pm.globals.set(\"sessionId\", sessionId);\r",
+							"\r",
+							"pm.test(\"Schema is valid\", function () {\r",
+							"  var schema = {\r",
+							"    type: \"object\",\r",
+							"    properties: {\r",
+							"      changedFlag: { type: \"string\" },\r",
+							"      emailTokenFlag: { type: \"string\" },\r",
+							"      otpFlag: { type: \"string\" },\r",
+							"      mobileTokenFlag: { type: \"string\" },\r",
+							"      errorMessage: { type: \"string\" },\r",
+							"      errorCode: { type: \"number\" },\r",
+							"      sessionId: { type: \"string\" }\r",
+							"    },\r",
+							"    required: [\"changedFlag\", \"emailTokenFlag\", \"otpFlag\", \"mobileTokenFlag\", \"errorMessage\", \"errorCode\", \"sessionId\"],\r",
+							"  };\r",
+							"\r",
+							"  var response = pm.response.json();\r",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userCode\": \"1786@CORP1522\",\r\n    \"password\": \"Era@1234\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/is-user-exists",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"login",
+						"is-user-exists"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Check User Already Exist",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userCode\": \"1786@CORP1522\",\r\n    \"password\": \"Era@1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/is-user-exists",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"login",
+								"is-user-exists"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 10:00:01 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"changedFlag\": \"Y\",\n    \"emailTokenFlag\": \"N\",\n    \"otpFlag\": \"Y\",\n    \"mobileTokenFlag\": \"N\",\n    \"errorMessage\": \"Please Select 2nd Factor Authentication\",\n    \"errorCode\": 0,\n    \"sessionId\": \"415F5A96\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Generate OTP for Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Status code\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).to.be.an('object');\r",
+							"    pm.expect(responseJSON).to.have.property('errorMessage');\r",
+							"    pm.expect(responseJSON).to.have.property('errorCode');\r",
+							"    pm.expect(responseJSON).to.have.property('emailId');\r",
+							"    pm.expect(responseJSON).to.have.property('mobileNo');\r",
+							"    pm.expect(responseJSON).to.have.property('userCode');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userCode\": \"1786@CORP1522\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/generate-otp",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"login",
+						"password-otp",
+						"generate-otp"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Generate OTP for Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userCode\": \"1786@CORP1522\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/generate-otp",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"login",
+								"password-otp",
+								"generate-otp"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 10:04:14 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"errorMessage\": \"OTP Generation Successful\",\n    \"errorCode\": 0,\n    \"emailId\": \"approver@gmail.com\",\n    \"mobileNo\": \"01712345678\",\n    \"userCode\": \"1786@CORP1522\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Verify OTP for Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//status code validation \r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"//store token\r",
+							"var jwtToken = responseJSON.jwtToken;\r",
+							"pm.globals.set(\"jwtToken\", jwtToken);\r",
+							"\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).to.be.an('object');\r",
+							"    pm.expect(responseJSON).to.have.property('jwtValidity');\r",
+							"    pm.expect(responseJSON).to.have.property('orgName');\r",
+							"    pm.expect(responseJSON).to.have.property('orgLogo');\r",
+							"    pm.expect(responseJSON).to.have.property('orgCode');\r",
+							"    pm.expect(responseJSON).to.have.property('emailId');\r",
+							"    pm.expect(responseJSON).to.have.property('jwtToken');\r",
+							"    pm.expect(responseJSON).to.have.property('responseMessage');\r",
+							"    pm.expect(responseJSON).to.have.property('userRole');\r",
+							"    pm.expect(responseJSON).to.have.property('userCode');\r",
+							"    pm.expect(responseJSON).to.have.property('responseCode');\r",
+							"    pm.expect(responseJSON).to.have.property('username');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userCode\": \"1786@CORP1522\",\r\n    \"otp\": \"123456\",\r\n    \"reference\": \"login\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/verify-otp",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"login",
+						"password-otp",
+						"verify-otp"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Verify OTP for Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userCode\": \"1786@CORP1522\",\r\n    \"otp\": \"123456\",\r\n    \"reference\": \"login\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/verify-otp",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"login",
+								"password-otp",
+								"verify-otp"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 11:51:01 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"jwtValidity\": 3600000,\n    \"orgName\": \"SHIRIN ENTERPRISE LT D.\",\n    \"orgLogo\": \"data:image/png;base64,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\",\n    \"orgCode\": \"CORP1522\",\n    \"emailId\": \"approver@gmail.com\",\n    \"jwtToken\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNzg2QENPUlAxNTIyIiwiaWF0IjoxNzM3NDYwMjYxLCJleHAiOjE3Mzc0NjM4NjF9.2CuzjbTBY5D6wRhvT1jsOb95SVkIZBorsUu4rBJJoYu7zGq7gE-CL3Vy-_aJYQc8Xgn_I03Ssqj8VRpidKlFtQ\",\n    \"responseMessage\": \"OTP Matched\",\n    \"userRole\": \"Approver,\",\n    \"userCode\": \"1786@CORP1522\",\n    \"responseCode\": 0,\n    \"username\": \"Approver-Shirin\"\n}"
+				}
+			]
+		},
+		{
+			"name": "User Wise Menu",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//status code validation\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Adding test for schema validation in the response body\r",
+							"pm.test(\"Schema is valid\", function () {\r",
+							"    var schema = {\r",
+							"        type: \"array\",\r",
+							"        items: {\r",
+							"            type: \"object\",\r",
+							"            properties: {\r",
+							"                MENU_TYPE: { type: \"string\" },\r",
+							"                MENU_ID: { type: \"string\" },\r",
+							"                MENU_LEVEL: { type: \"number\" },\r",
+							"                MENU_URL: { type: \"string\" },\r",
+							"                RECORD_ID: { type: \"number\" },\r",
+							"                USER_CODE: { type: \"string\" },\r",
+							"                MENU_NAME: { type: \"string\" },\r",
+							"                PARENT_ID: { type: \"number\" },\r",
+							"                MENU_SERIAL: { type: \"number\" }\r",
+							"            },\r",
+							"            required: [\"MENU_TYPE\", \"MENU_ID\", \"MENU_LEVEL\", \"MENU_URL\", \"RECORD_ID\", \"USER_CODE\", \"MENU_NAME\", \"PARENT_ID\", \"MENU_SERIAL\"]\r",
+							"        }\r",
+							"    };\r",
+							"\r",
+							"    var response = pm.response.json();\r",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/menu-master/user-wise-menu/1786@CORP1522",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"menu-master",
+						"user-wise-menu",
+						"1786@CORP1522"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "User Wise Menu",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/menu-master/user-wise-menu/1786@CORP1522",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"menu-master",
+								"user-wise-menu",
+								"1786@CORP1522"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 11:59:28 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"MENU_TYPE\": \"parent\",\n        \"MENU_ID\": \"MNU1003\",\n        \"MENU_LEVEL\": 0,\n        \"MENU_URL\": \"fund-transfer\",\n        \"RECORD_ID\": 1003,\n        \"USER_CODE\": \"1786@CORP1522\",\n        \"MENU_NAME\": \"Transactions\",\n        \"PARENT_ID\": 0,\n        \"MENU_SERIAL\": 4\n    },\n    {\n        \"MENU_LEVEL\": 0,\n        \"MENU_TYPE\": \"link\",\n        \"MENU_NAME\": \"Statement\",\n        \"MENU_ID\": \"MNU1040\",\n        \"USER_CODE\": \"1786@CORP1522\",\n        \"MENU_SERIAL\": 2,\n        \"RECORD_ID\": 1065,\n        \"MENU_URL\": \"account-statement\",\n        \"PARENT_ID\": 0\n    },\n    {\n        \"MENU_URL\": \"bulk-transaction-history\",\n        \"PARENT_ID\": 1174,\n        \"MENU_NAME\": \"Transaction History(Bulk)\",\n        \"MENU_LEVEL\": 0,\n        \"RECORD_ID\": 1087,\n        \"MENU_ID\": \"MNU1060\",\n        \"MENU_SERIAL\": 6,\n        \"USER_CODE\": \"1786@CORP1522\",\n        \"MENU_TYPE\": \"child\"\n    },\n    {\n        \"MENU_TYPE\": \"parent\",\n        \"RECORD_ID\": 1174,\n        \"MENU_ID\": \"MNU1174\",\n        \"MENU_NAME\": \"Transaction History\",\n        \"MENU_LEVEL\": 0,\n        \"MENU_SERIAL\": 11,\n        \"USER_CODE\": \"1786@CORP1522\",\n        \"MENU_URL\": \"transaction-history\",\n        \"PARENT_ID\": 0\n    },\n    {\n        \"MENU_NAME\": \"Transaction History(Single)\",\n        \"PARENT_ID\": 1174,\n        \"MENU_LEVEL\": 0,\n        \"MENU_ID\": \"MNU1198\",\n        \"MENU_SERIAL\": 5,\n        \"USER_CODE\": \"1786@CORP1522\",\n        \"MENU_URL\": \"transaction-history\",\n        \"RECORD_ID\": 9998,\n        \"MENU_TYPE\": \"child\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "User Wise Notifications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//status code validation\r",
+							"pm.test(\"Response status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+							"    jsonData.forEach(function(notification) {\r",
+							"        pm.expect(notification).to.have.property('id');\r",
+							"        pm.expect(notification).to.have.property('userid');\r",
+							"        pm.expect(notification).to.have.property('message');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/notifications/user-wise/1786@CORP1522",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"notifications",
+						"user-wise",
+						"1786@CORP1522"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "User Wise Notifications",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/notifications/user-wise/1786@CORP1522",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"notifications",
+								"user-wise",
+								"1786@CORP1522"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:03:09 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 2712,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Other Bank BEFTN of account no :04934001925 Amount :5000 Originated from :1786@CORP1522\"\n    },\n    {\n        \"id\": 2717,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :6500 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 2718,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :6500 Originated from :1786@CORP1522\"\n    },\n    {\n        \"id\": 2723,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :6000 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 2732,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00734008268 Amount :6500 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 2738,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :8000.5 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 2739,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :8000.5 Originated from :1786@CORP1522\"\n    },\n    {\n        \"id\": 2751,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00734008268 Amount :6500 Originated from :1823@CORP1522\"\n    },\n    {\n        \"id\": 2841,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :1000 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 2844,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :00433002596 Amount :1000 Originated from :1786@CORP1522\"\n    },\n    {\n        \"id\": 2892,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :01533002868 Amount :1000 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 2895,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Fund Transfer Own Bank of account no :01533002868 Amount :1000 Originated from :1786@CORP1522\"\n    },\n    {\n        \"id\": 3005,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Bulk Transfer Own Bank of account no :20250112171931587753 Amount :300 Originated from :1785@CORP1522\"\n    },\n    {\n        \"id\": 3008,\n        \"userid\": \"1786@CORP1522\",\n        \"message\": \"You have an checking/approval pending from Bulk Transfer Own Bank of account no :20250121153542207487 Amount :1500 Originated from :1785@CORP1522\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Combined Transaction - Before Transaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//status code validation\r",
+							"pm.test(\"Response code status is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//store record id and file id\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"var recordId = responseJSON[\"Bulk Transfer\"][0].recordId;\r",
+							"pm.globals.set(\"recordId\", recordId);\r",
+							"\r",
+							"var fileId = responseJSON[\"Bulk Transfer\"][0].fileId;\r",
+							"pm.globals.set(\"fileId\", fileId);\r",
+							"// Test to validate the response body schema\r",
+							"pm.test(\"Response body schema is valid\", function () {\r",
+							"    var schema = {\r",
+							"        type: \"object\",\r",
+							"        properties: {\r",
+							"            \"Fund Transfer\": {\r",
+							"                type: \"array\"\r",
+							"            },\r",
+							"            \"Bulk Transfer\": {\r",
+							"                type: \"array\",\r",
+							"                items: {\r",
+							"                    type: \"object\",\r",
+							"                    properties: {\r",
+							"                        recordId: { type: \"number\" },\r",
+							"                        referenceNo: { type: \"string\" },\r",
+							"                        // Add more property validations as needed\r",
+							"                        bulkUploadFileDetailsList: {\r",
+							"                            type: \"array\",\r",
+							"                            items: {\r",
+							"                                type: \"object\",\r",
+							"                                properties: {\r",
+							"                                    recordId: { type: \"number\" },\r",
+							"                                    mailId: { type: \"string\" },\r",
+							"                                    // Add more property validations as needed\r",
+							"                                },\r",
+							"                                required: [\"recordId\", \"mailId\"]  // Add required properties as needed\r",
+							"                            }\r",
+							"                        }\r",
+							"                    },\r",
+							"                    required: [\"recordId\", \"referenceNo\", \"fileId\"]  // Add required properties as needed\r",
+							"                }\r",
+							"            }\r",
+							"        },\r",
+							"        required: [\"Fund Transfer\", \"Bulk Transfer\"]  // Add required properties as needed\r",
+							"    };\r",
+							"\r",
+							"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userCode\": \"1786@CORP1522\",\r\n    \"userRoles\": \"Role for ABCD,\",\r\n    \"sessionId\": \"415F5A96\",\r\n    \"corpId\": \"CORP1522\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/fund-transfer/combined-transaction",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"fund-transfer",
+						"combined-transaction"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Combined Transaction - Before Transaction",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userCode\": \"1786@CORP1522\",\r\n    \"userRoles\": \"Role for ABCD,\",\r\n    \"sessionId\": \"415F5A96\",\r\n    \"corpId\": \"CORP1522\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/fund-transfer/combined-transaction",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"fund-transfer",
+								"combined-transaction"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:08:06 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"Fund Transfer\": [],\n    \"Bulk Transfer\": [\n        {\n            \"recordId\": 649,\n            \"referenceNo\": \"Ref.afrida-007\",\n            \"fileId\": \"20250112171931587753\",\n            \"fileName\": \"bulk-007.xlsx\",\n            \"filePath\": \"--\",\n            \"eventId\": \"EV1005\",\n            \"eventType\": \"Bulk Transfer Own Bank\",\n            \"transactionType\": \"BLKS\",\n            \"sourceAccount\": \"00733000449\",\n            \"amount\": 300,\n            \"approvalAuthorities\": null,\n            \"approvalAuthoritiesStatus\": null,\n            \"remarks\": \"Maker: 1784@CORP1522, Remarks: \\n\",\n            \"status\": \"RAISED\",\n            \"finalApproveBy\": null,\n            \"finalApproveDate\": null,\n            \"documentNo\": null,\n            \"documentDate\": null,\n            \"createdBy\": \"1784@CORP1522\",\n            \"createdDate\": \"2025-01-12T11:23:44.000+00:00\",\n            \"updatedBy\": null,\n            \"updatedDate\": null,\n            \"reversedFlag\": null,\n            \"reversedBy\": null,\n            \"reversedDate\": null,\n            \"timestamp\": \"2025-01-12T11:31:45.000+00:00\",\n            \"corporateId\": \"CORP1522\",\n            \"transactionFlag\": null,\n            \"transactionPurpose\": \"SD\",\n            \"narration\": \"Salary Disbursement\",\n            \"checker\": null,\n            \"approver\": null,\n            \"bulkUploadFileDetailsList\": [\n                {\n                    \"recordId\": 27341,\n                    \"mailId\": \"zohir@mail.com\",\n                    \"sessionId\": null,\n                    \"requestId\": null,\n                    \"sourceAccount\": \"00733000449\",\n                    \"sourceAccountTitle\": null,\n                    \"destinationAccount\": \"04934002900\",\n                    \"destinationAccountTitle\": \"Md. Zohir\",\n                    \"desAccountStatus\": null,\n                    \"bankCode\": \"070\",\n                    \"bankName\": \"Bank Asia\",\n                    \"branchCode\": \"049\",\n                    \"branchName\": \"Paltan\",\n                    \"amount\": 100,\n                    \"remarks\": \"SAL\",\n                    \"requestDate\": null,\n                    \"timestamp\": \"2025-01-12T11:23:44.000+00:00\",\n                    \"corporateId\": \"CORP1522\",\n                    \"transactionStatus\": \"V\",\n                    \"reason\": null,\n                    \"routeNo\": \"60264631\"\n                },\n                {\n                    \"recordId\": 27342,\n                    \"mailId\": \"mosarof@mail.com\",\n                    \"sessionId\": null,\n                    \"requestId\": null,\n                    \"sourceAccount\": \"00733000449\",\n                    \"sourceAccountTitle\": null,\n                    \"destinationAccount\": \"50311001648\",\n                    \"destinationAccountTitle\": \"Md. Mosarof\",\n                    \"desAccountStatus\": null,\n                    \"bankCode\": \"070\",\n                    \"bankName\": \"Bank Asia\",\n                    \"branchCode\": \"049\",\n                    \"branchName\": \"Paltan\",\n                    \"amount\": 100,\n                    \"remarks\": \"SAL\",\n                    \"requestDate\": null,\n                    \"timestamp\": \"2025-01-12T11:23:44.000+00:00\",\n                    \"corporateId\": \"CORP1522\",\n                    \"transactionStatus\": \"V\",\n                    \"reason\": null,\n                    \"routeNo\": \"225275357\"\n                },\n                {\n                    \"recordId\": 27343,\n                    \"mailId\": \"billal@mail.com\",\n                    \"sessionId\": null,\n                    \"requestId\": null,\n                    \"sourceAccount\": \"00733000449\",\n                    \"sourceAccountTitle\": null,\n                    \"destinationAccount\": \"1083486030021\",\n                    \"destinationAccountTitle\": \"Md. Billal\",\n                    \"desAccountStatus\": null,\n                    \"bankCode\": \"070\",\n                    \"bankName\": \"Bank Asia\",\n                    \"branchCode\": \"049\",\n                    \"branchName\": \"Paltan\",\n                    \"amount\": 100,\n                    \"remarks\": \"SAL\",\n                    \"requestDate\": null,\n                    \"timestamp\": \"2025-01-12T11:23:44.000+00:00\",\n                    \"corporateId\": \"CORP1522\",\n                    \"transactionStatus\": \"V\",\n                    \"reason\": null,\n                    \"routeNo\": \"95264693\"\n                }\n            ]\n        },\n        {\n            \"recordId\": 654,\n            \"referenceNo\": \"Ref.afrida-011\",\n            \"fileId\": \"20250121153542207487\",\n            \"fileName\": \"bulk-011.xlsx\",\n            \"filePath\": \"--\",\n            \"eventId\": \"EV1005\",\n            \"eventType\": \"Bulk Transfer Own Bank\",\n            \"transactionType\": \"BLKS\",\n            \"sourceAccount\": \"00733000449\",\n            \"amount\": 1500,\n            \"approvalAuthorities\": null,\n            \"approvalAuthoritiesStatus\": null,\n            \"remarks\": \"Maker: 1784@CORP1522, Remarks: \\n\",\n            \"status\": \"RAISED\",\n            \"finalApproveBy\": null,\n            \"finalApproveDate\": null,\n            \"documentNo\": null,\n            \"documentDate\": null,\n            \"createdBy\": \"1784@CORP1522\",\n            \"createdDate\": \"2025-01-21T09:40:09.000+00:00\",\n            \"updatedBy\": null,\n            \"updatedDate\": null,\n            \"reversedFlag\": null,\n            \"reversedBy\": null,\n            \"reversedDate\": null,\n            \"timestamp\": \"2025-01-21T09:47:50.000+00:00\",\n            \"corporateId\": \"CORP1522\",\n            \"transactionFlag\": null,\n            \"transactionPurpose\": \"SD\",\n            \"narration\": \"Salary Disbursement\",\n            \"checker\": null,\n            \"approver\": null,\n            \"bulkUploadFileDetailsList\": [\n                {\n                    \"recordId\": 27367,\n                    \"mailId\": \"zohir@mail.com\",\n                    \"sessionId\": null,\n                    \"requestId\": null,\n                    \"sourceAccount\": \"00733000449\",\n                    \"sourceAccountTitle\": null,\n                    \"destinationAccount\": \"04934002900\",\n                    \"destinationAccountTitle\": \"Afrida\",\n                    \"desAccountStatus\": null,\n                    \"bankCode\": \"070\",\n                    \"bankName\": \"Bank Asia\",\n                    \"branchCode\": \"049\",\n                    \"branchName\": \"Paltan\",\n                    \"amount\": 500,\n                    \"remarks\": \"SAL\",\n                    \"requestDate\": null,\n                    \"timestamp\": \"2025-01-21T09:40:09.000+00:00\",\n                    \"corporateId\": \"CORP1522\",\n                    \"transactionStatus\": \"V\",\n                    \"reason\": null,\n                    \"routeNo\": \"60264631\"\n                },\n                {\n                    \"recordId\": 27368,\n                    \"mailId\": \"mosarof@mail.com\",\n                    \"sessionId\": null,\n                    \"requestId\": null,\n                    \"sourceAccount\": \"00733000449\",\n                    \"sourceAccountTitle\": null,\n                    \"destinationAccount\": \"50311001648\",\n                    \"destinationAccountTitle\": \"Rahman\",\n                    \"desAccountStatus\": null,\n                    \"bankCode\": \"070\",\n                    \"bankName\": \"Bank Asia\",\n                    \"branchCode\": \"049\",\n                    \"branchName\": \"Paltan\",\n                    \"amount\": 500,\n                    \"remarks\": \"SAL\",\n                    \"requestDate\": null,\n                    \"timestamp\": \"2025-01-21T09:40:09.000+00:00\",\n                    \"corporateId\": \"CORP1522\",\n                    \"transactionStatus\": \"V\",\n                    \"reason\": null,\n                    \"routeNo\": \"225275357\"\n                },\n                {\n                    \"recordId\": 27369,\n                    \"mailId\": \"billal@mail.com\",\n                    \"sessionId\": null,\n                    \"requestId\": null,\n                    \"sourceAccount\": \"00733000449\",\n                    \"sourceAccountTitle\": null,\n                    \"destinationAccount\": \"1083486030021\",\n                    \"destinationAccountTitle\": \"Urmi\",\n                    \"desAccountStatus\": null,\n                    \"bankCode\": \"070\",\n                    \"bankName\": \"Bank Asia\",\n                    \"branchCode\": \"049\",\n                    \"branchName\": \"Paltan\",\n                    \"amount\": 500,\n                    \"remarks\": \"SAL\",\n                    \"requestDate\": null,\n                    \"timestamp\": \"2025-01-21T09:40:09.000+00:00\",\n                    \"corporateId\": \"CORP1522\",\n                    \"transactionStatus\": \"V\",\n                    \"reason\": null,\n                    \"routeNo\": \"95264693\"\n                }\n            ]\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Found Corporate Account List By CorpID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status validation\r",
+							"pm.test(\"Response code status is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('version');\r",
+							"    pm.expect(responseJSON).to.have.property('timestamp');\r",
+							"    pm.expect(responseJSON).to.have.property('responseCode');\r",
+							"    pm.expect(responseJSON).to.have.property('responseMessage');\r",
+							"    pm.expect(responseJSON).to.have.property('payload');\r",
+							"    pm.expect(responseJSON).to.have.property('eventRights');\r",
+							"});\r",
+							"\r",
+							"// checking that each payload object has the required properties\r",
+							"pm.test(\"Payload object structure is valid\", function () {\r",
+							"  responseJSON.payload.forEach((payload)=>{\r",
+							"    pm.expect(payload).to.have.property('serialNo');\r",
+							"    pm.expect(payload).to.have.property('customerId');\r",
+							"    pm.expect(payload).to.have.property('companyCode');\r",
+							"    pm.expect(payload).to.have.property('branchCode');\r",
+							"    pm.expect(payload).to.have.property('branchName');\r",
+							"    pm.expect(payload).to.have.property('accountNo');\r",
+							"    pm.expect(payload).to.have.property('accountTitle');\r",
+							"    pm.expect(payload).to.have.property('accountType');\r",
+							"    pm.expect(payload).to.have.property('currency');\r",
+							"    pm.expect(payload).to.have.property('availableBalance');\r",
+							"    pm.expect(payload).to.have.property('accountStatus');\r",
+							"    pm.expect(payload).to.have.property('openDate');\r",
+							"  })\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"1786@CORP1522\",\r\n    \"corporateId\": \"CORP1522\",\r\n    \"sessionId\": \"415F5A96\",\r\n    \"type\": \"S\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/corporates/corporate-account-list-by-corpId",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"corporates",
+						"corporate-account-list-by-corpId"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Found Corporate Account List By CorpID",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"1786@CORP1522\",\r\n    \"corporateId\": \"CORP1522\",\r\n    \"sessionId\": \"415F5A96\",\r\n    \"type\": \"S\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/corporates/corporate-account-list-by-corpId",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"corporates",
+								"corporate-account-list-by-corpId"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:11:34 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"version\": \"\",\n    \"timestamp\": \"\",\n    \"status\": null,\n    \"responseCode\": 0,\n    \"responseMessage\": \"Data found.\",\n    \"payload\": [\n        {\n            \"serialNo\": 1,\n            \"customerId\": \"00034014\",\n            \"companyCode\": \"001\",\n            \"branchCode\": \"007\",\n            \"branchName\": \"Scotia Branch\",\n            \"accountNo\": \"00733000449\",\n            \"accountTitle\": \"Shirin Enterprise Ltd.\",\n            \"accountType\": \"Current Deposit Account\",\n            \"accountTypeDescription\": null,\n            \"currency\": \"BDT\",\n            \"availableBalance\": \"251399758229.67\",\n            \"accountStatus\": \"ACT\",\n            \"openDate\": \"16/02/2001\"\n        }\n    ],\n    \"eventRights\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Cheque Leaf Reject Reason List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//status code validation\r",
+							"pm.test(\"response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"// Validate the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    var responseJSON = pm.response.json();\r",
+							"    responseJSON.forEach((item) => {\r",
+							"        pm.expect(item).to.have.property('label');\r",
+							"        pm.expect(item).to.have.property('value');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/cheque-leaf/rejectReasonlist",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"cheque-leaf",
+						"rejectReasonlist"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Cheque Leaf Reject Reason List",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/cheque-leaf/rejectReasonlist",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"cheque-leaf",
+								"rejectReasonlist"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:13:04 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"label\": \"TEST ONE\",\n        \"value\": \"1\"\n    },\n    {\n        \"label\": \"OTHERS\",\n        \"value\": \"3\"\n    },\n    {\n        \"label\": \"TEST TWO\",\n        \"value\": \"2\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get Other Bank List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).has.property('bankList');\r",
+							"    pm.expect(responseJSON).has.property('errorCode');\r",
+							"});\r",
+							"\r",
+							"// checking that each bank object has the required properties\r",
+							"pm.test(\"Bank object structure is valid\", function () {\r",
+							"  responseJSON.bankList.forEach((bank)=>{\r",
+							"    pm.expect(bank).has.property('bankCode');\r",
+							"    pm.expect(bank).has.property('bankName');\r",
+							"  })\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/fund-transfer/get-other-bank-list",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"fund-transfer",
+						"get-other-bank-list"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Other Bank List",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/fund-transfer/get-other-bank-list",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"fund-transfer",
+								"get-other-bank-list"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:14:38 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"bankList\": [\n        {\n            \"bankCode\": \"020\",\n            \"bankName\": \"020-AB BANK PLC\"\n        },\n        {\n            \"bankCode\": \"010\",\n            \"bankName\": \"010-AGRANI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"015\",\n            \"bankName\": \"015-AL-ARAFAH ISLAMI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"025\",\n            \"bankName\": \"025-BANGLADESH BANK\"\n        },\n        {\n            \"bankCode\": \"030\",\n            \"bankName\": \"030-BANGLADESH COMMERCE BANK PLC\"\n        },\n        {\n            \"bankCode\": \"035\",\n            \"bankName\": \"035-BANGLADESH KRISHI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"040\",\n            \"bankName\": \"040-BANGLADESH SAMABAYA BANK LTD.\"\n        },\n        {\n            \"bankCode\": \"045\",\n            \"bankName\": \"045-BANGLADESH SHILPA BANK\"\n        },\n        {\n            \"bankCode\": \"065\",\n            \"bankName\": \"065-BANK AL-FALAH PLC\"\n        },\n        {\n            \"bankCode\": \"001\",\n            \"bankName\": \"001-BANK ASIA PLC.\"\n        },\n        {\n            \"bankCode\": \"055\",\n            \"bankName\": \"055-BASIC BANK PLC\"\n        },\n        {\n            \"bankCode\": \"047\",\n            \"bankName\": \"047-BDBL\"\n        },\n        {\n            \"bankCode\": \"315\",\n            \"bankName\": \"315-BENGAL COMMERCIAL BANK PLC\"\n        },\n        {\n            \"bankCode\": \"060\",\n            \"bankName\": \"060-BRAC BANK PLC\"\n        },\n        {\n            \"bankCode\": \"075\",\n            \"bankName\": \"075-CITI BANK N A\"\n        },\n        {\n            \"bankCode\": \"320\",\n            \"bankName\": \"320-CITIZEN'S BANK PLC\"\n        },\n        {\n            \"bankCode\": \"080\",\n            \"bankName\": \"080-COMMERCIAL BANK OF CEYLON\"\n        },\n        {\n            \"bankCode\": \"310\",\n            \"bankName\": \"310-COMMUNITY BANK BANGLADESH PLC\"\n        },\n        {\n            \"bankCode\": \"085\",\n            \"bankName\": \"085-DHAKA BANK PLC\"\n        },\n        {\n            \"bankCode\": \"090\",\n            \"bankName\": \"090-DUTCH-BANGLA BANK PLC.\"\n        },\n        {\n            \"bankCode\": \"095\",\n            \"bankName\": \"095-EASTERN BANK PLC\"\n        },\n        {\n            \"bankCode\": \"100\",\n            \"bankName\": \"100-EXIM BANK PLC\"\n        },\n        {\n            \"bankCode\": \"105\",\n            \"bankName\": \"105-FIRST SECURITY ISLAMI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"300\",\n            \"bankName\": \"300-GLOBAL ISLAMI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"110\",\n            \"bankName\": \"110-HABIB BANK PLC\"\n        },\n        {\n            \"bankCode\": \"115\",\n            \"bankName\": \"115-HONGKONG & SHANGHAI BANKING CORP.\"\n        },\n        {\n            \"bankCode\": \"230\",\n            \"bankName\": \"230-ICB ISLAMIC BANK PLC\"\n        },\n        {\n            \"bankCode\": \"120\",\n            \"bankName\": \"120-IFIC BANK PLC\"\n        },\n        {\n            \"bankCode\": \"125\",\n            \"bankName\": \"125-ISLAMI BANK BANGLADESH PLC\"\n        },\n        {\n            \"bankCode\": \"130\",\n            \"bankName\": \"130-JAMUNA BANK PLC\"\n        },\n        {\n            \"bankCode\": \"135\",\n            \"bankName\": \"135-JANATA BANK PLC\"\n        },\n        {\n            \"bankCode\": \"275\",\n            \"bankName\": \"275-MEGHNA BANK PLC\"\n        },\n        {\n            \"bankCode\": \"140\",\n            \"bankName\": \"140-MERCANTILE BANK PLC\"\n        },\n        {\n            \"bankCode\": \"285\",\n            \"bankName\": \"285-MIDLAND BANK PLC\"\n        },\n        {\n            \"bankCode\": \"295\",\n            \"bankName\": \"295-MODHUMOTI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"145\",\n            \"bankName\": \"145-MUTUAL TRUST BANK PLC\"\n        },\n        {\n            \"bankCode\": \"155\",\n            \"bankName\": \"155-NATIONAL BANK OF PAKISTAN\"\n        },\n        {\n            \"bankCode\": \"150\",\n            \"bankName\": \"150-NATIONAL BANK PLC\"\n        },\n        {\n            \"bankCode\": \"160\",\n            \"bankName\": \"160-NATIONAL CREDIT & COMMERCE BANK PLC\"\n        },\n        {\n            \"bankCode\": \"050\",\n            \"bankName\": \"050-NOT Enable\"\n        },\n        {\n            \"bankCode\": \"290\",\n            \"bankName\": \"290-NRB BANK PLC\"\n        },\n        {\n            \"bankCode\": \"260\",\n            \"bankName\": \"260-NRB COMMERCIAL BANK PLC\"\n        },\n        {\n            \"bankCode\": \"165\",\n            \"bankName\": \"165-ONE BANK PLC\"\n        },\n        {\n            \"bankCode\": \"280\",\n            \"bankName\": \"280-PADMA BANK PLC\"\n        },\n        {\n            \"bankCode\": \"170\",\n            \"bankName\": \"170-PRIME BANK PLC\"\n        },\n        {\n            \"bankCode\": \"175\",\n            \"bankName\": \"175-PUBALI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"180\",\n            \"bankName\": \"180-RAJSHAHI KRISHI UNNAYAN BANK\"\n        },\n        {\n            \"bankCode\": \"185\",\n            \"bankName\": \"185-RUPALI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"270\",\n            \"bankName\": \"270-SBAC BANK PLC\"\n        },\n        {\n            \"bankCode\": \"190\",\n            \"bankName\": \"190-SHAHJALAL ISLAMI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"305\",\n            \"bankName\": \"305-SHIMANTO BANK PLC\"\n        },\n        {\n            \"bankCode\": \"195\",\n            \"bankName\": \"195-SOCIAL ISLAMI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"200\",\n            \"bankName\": \"200-SONALI BANK PLC\"\n        },\n        {\n            \"bankCode\": \"205\",\n            \"bankName\": \"205-SOUTHEAST BANK PLC\"\n        },\n        {\n            \"bankCode\": \"210\",\n            \"bankName\": \"210-STANDARD BANK PLC\"\n        },\n        {\n            \"bankCode\": \"215\",\n            \"bankName\": \"215-STANDARD CHARTERED BANK\"\n        },\n        {\n            \"bankCode\": \"220\",\n            \"bankName\": \"220-STATE BANK OF INDIA\"\n        },\n        {\n            \"bankCode\": \"225\",\n            \"bankName\": \"225-THE CITY BANK PLC\"\n        },\n        {\n            \"bankCode\": \"235\",\n            \"bankName\": \"235-THE PREMIER BANK PLC\"\n        },\n        {\n            \"bankCode\": \"240\",\n            \"bankName\": \"240-TRUST BANK PLC\"\n        },\n        {\n            \"bankCode\": \"265\",\n            \"bankName\": \"265-UNION BANK PLC\"\n        },\n        {\n            \"bankCode\": \"245\",\n            \"bankName\": \"245-UNITED COMMERCIAL BANK PLC\"\n        },\n        {\n            \"bankCode\": \"250\",\n            \"bankName\": \"250-UTTARA BANK PLC\"\n        },\n        {\n            \"bankCode\": \"255\",\n            \"bankName\": \"255-WOORI BANK\"\n        }\n    ],\n    \"errorCode\": 0\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Transaction Purpose List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).has.property('errorCode');\r",
+							"    pm.expect(responseJSON).has.property('codeDescList');\r",
+							"});\r",
+							"\r",
+							"// checking that each codeDescList object has the required properties\r",
+							"pm.test(\"codeDescList object structure is valid\", function () {\r",
+							"  responseJSON.codeDescList.forEach((codeDesc)=>{\r",
+							"    pm.expect(codeDesc).has.property('code');\r",
+							"    pm.expect(codeDesc).has.property('desc');\r",
+							"  })\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/fund-transfer/get-transaction-purpose-list",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"fund-transfer",
+						"get-transaction-purpose-list"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Transaction Purpose List",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/fund-transfer/get-transaction-purpose-list",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"fund-transfer",
+								"get-transaction-purpose-list"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:15:06 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"errorCode\": 0,\n    \"codeDescList\": [\n        {\n            \"code\": \"SD\",\n            \"desc\": \"Salary Disbursement\"\n        },\n        {\n            \"code\": \"FB\",\n            \"desc\": \"Festival Bonous\"\n        },\n        {\n            \"code\": \"SP\",\n            \"desc\": \"Supplier Payment\"\n        },\n        {\n            \"code\": \"OT\",\n            \"desc\": \"Others Payment\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Local IP",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).to.have.property('ip').that.is.a('string').and.not.empty;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/local-ip",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"login",
+						"local-ip"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Local IP",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/local-ip",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"login",
+								"local-ip"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Jan 2025 12:15:35 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"ip\": \"192.183.155.22\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Upload File History",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var responseJSON = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.all.keys(\r",
+							"        'recordId', 'referenceNo', 'fileId', 'fileName', 'filePath', 'eventId', 'eventType', \r",
+							"        'transactionType', 'sourceAccount', 'amount', 'approvalAuthorities', 'approvalAuthoritiesStatus', \r",
+							"        'remarks', 'status', 'finalApproveBy', 'finalApproveDate', 'documentNo', 'documentDate', \r",
+							"        'createdBy', 'createdDate', 'updatedBy', 'updatedDate', 'reversedFlag', 'reversedBy', \r",
+							"        'reversedDate', 'timestamp', 'corporateId', 'transactionFlag', 'transactionPurpose', \r",
+							"        'narration', 'checker', 'approver', 'bulkUploadFileDetailsList'\r",
+							"    );\r",
+							"\r",
+							"    // Validate the structure of bulkUploadFileDetailsList array\r",
+							"    pm.expect(responseJSON.bulkUploadFileDetailsList).to.be.an('array');\r",
+							"    responseJSON.bulkUploadFileDetailsList.forEach(function(detail) {\r",
+							"        pm.expect(detail).to.be.an('object').that.has.all.keys(\r",
+							"            'recordId', 'mailId', 'sessionId', 'requestId', 'sourceAccount', 'sourceAccountTitle', \r",
+							"            'destinationAccount', 'destinationAccountTitle', 'desAccountStatus', 'bankCode', \r",
+							"            'bankName', 'branchCode', 'branchName', 'amount', 'remarks', 'requestDate', 'timestamp', \r",
+							"            'corporateId', 'transactionStatus', 'reason', 'routeNo'\r",
+							"        );\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/bulk-upload-file/file-id/{{fileId}}",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"bulk-upload-file",
+						"file-id",
+						"{{fileId}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Upload File History",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/bulk-upload-file/file-id/{{fileId}}",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"bulk-upload-file",
+								"file-id",
+								"{{fileId}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 22 Jan 2025 05:34:32 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"recordId\": 649,\n    \"referenceNo\": \"Ref.afrida-007\",\n    \"fileId\": \"20250112171931587753\",\n    \"fileName\": \"bulk-007.xlsx\",\n    \"filePath\": \"--\",\n    \"eventId\": \"EV1005\",\n    \"eventType\": \"Bulk Transfer Own Bank\",\n    \"transactionType\": \"BLKS\",\n    \"sourceAccount\": \"00733000449\",\n    \"amount\": 300,\n    \"approvalAuthorities\": null,\n    \"approvalAuthoritiesStatus\": null,\n    \"remarks\": \"Maker: 1784@CORP1522, Remarks: \\n\",\n    \"status\": \"RAISED\",\n    \"finalApproveBy\": null,\n    \"finalApproveDate\": null,\n    \"documentNo\": \"007WB169288\",\n    \"documentDate\": \"2025-01-21T18:00:00.000+00:00\",\n    \"createdBy\": \"1784@CORP1522\",\n    \"createdDate\": \"2025-01-12T11:23:44.000+00:00\",\n    \"updatedBy\": null,\n    \"updatedDate\": null,\n    \"reversedFlag\": null,\n    \"reversedBy\": null,\n    \"reversedDate\": null,\n    \"timestamp\": \"2025-01-12T11:31:45.000+00:00\",\n    \"corporateId\": \"CORP1522\",\n    \"transactionFlag\": \"Y\",\n    \"transactionPurpose\": \"SD\",\n    \"narration\": \"Salary Disbursement\",\n    \"checker\": null,\n    \"approver\": null,\n    \"bulkUploadFileDetailsList\": [\n        {\n            \"recordId\": 27341,\n            \"mailId\": \"zohir@mail.com\",\n            \"sessionId\": null,\n            \"requestId\": null,\n            \"sourceAccount\": \"00733000449\",\n            \"sourceAccountTitle\": null,\n            \"destinationAccount\": \"04934002900\",\n            \"destinationAccountTitle\": \"Md. Zohir\",\n            \"desAccountStatus\": null,\n            \"bankCode\": \"070\",\n            \"bankName\": \"Bank Asia\",\n            \"branchCode\": \"049\",\n            \"branchName\": \"Paltan\",\n            \"amount\": 100,\n            \"remarks\": \"SAL\",\n            \"requestDate\": null,\n            \"timestamp\": \"2025-01-12T11:23:44.000+00:00\",\n            \"corporateId\": \"CORP1522\",\n            \"transactionStatus\": \"P\",\n            \"reason\": null,\n            \"routeNo\": \"60264631\"\n        },\n        {\n            \"recordId\": 27342,\n            \"mailId\": \"mosarof@mail.com\",\n            \"sessionId\": null,\n            \"requestId\": null,\n            \"sourceAccount\": \"00733000449\",\n            \"sourceAccountTitle\": null,\n            \"destinationAccount\": \"50311001648\",\n            \"destinationAccountTitle\": \"Md. Mosarof\",\n            \"desAccountStatus\": null,\n            \"bankCode\": \"070\",\n            \"bankName\": \"Bank Asia\",\n            \"branchCode\": \"049\",\n            \"branchName\": \"Paltan\",\n            \"amount\": 100,\n            \"remarks\": \"SAL\",\n            \"requestDate\": null,\n            \"timestamp\": \"2025-01-12T11:23:44.000+00:00\",\n            \"corporateId\": \"CORP1522\",\n            \"transactionStatus\": \"P\",\n            \"reason\": null,\n            \"routeNo\": \"225275357\"\n        },\n        {\n            \"recordId\": 27343,\n            \"mailId\": \"billal@mail.com\",\n            \"sessionId\": null,\n            \"requestId\": null,\n            \"sourceAccount\": \"00733000449\",\n            \"sourceAccountTitle\": null,\n            \"destinationAccount\": \"1083486030021\",\n            \"destinationAccountTitle\": \"Md. Billal\",\n            \"desAccountStatus\": null,\n            \"bankCode\": \"070\",\n            \"bankName\": \"Bank Asia\",\n            \"branchCode\": \"049\",\n            \"branchName\": \"Paltan\",\n            \"amount\": 100,\n            \"remarks\": \"SAL\",\n            \"requestDate\": null,\n            \"timestamp\": \"2025-01-12T11:23:44.000+00:00\",\n            \"corporateId\": \"CORP1522\",\n            \"transactionStatus\": \"P\",\n            \"reason\": null,\n            \"routeNo\": \"95264693\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Generate OTP for Checking Process",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"// Add a test to validate the response body schema\r",
+							"pm.test(\"Response body schema is valid\", function () {\r",
+							"    var schema = {\r",
+							"        type: \"object\",\r",
+							"        properties: {\r",
+							"            errorMessage: { type: \"string\" },\r",
+							"            errorCode: { type: \"number\" },\r",
+							"            emailId: { type: \"string\" },\r",
+							"            mobileNo: { type: \"string\" },\r",
+							"            userCode: { type: \"string\" }\r",
+							"        },\r",
+							"        required: [\"errorMessage\", \"errorCode\", \"emailId\", \"mobileNo\", \"userCode\"]\r",
+							"    };\r",
+							"\r",
+							"    var response = pm.response.json();\r",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userCode\": \"1786@CORP1522\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/generate-otp",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"login",
+						"password-otp",
+						"generate-otp"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Generate OTP for Checking Process",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userCode\": \"1786@CORP1522\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/generate-otp",
+							"host": [
+								"{{scheme}}{{host}}"
+							],
+							"port": "{{port}}{{common_path}}",
+							"path": [
+								"login",
+								"password-otp",
+								"generate-otp"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 22 Jan 2025 05:21:42 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=20"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"errorMessage\": \"OTP Generation Successful\",\n    \"errorCode\": 0,\n    \"emailId\": \"approver@gmail.com\",\n    \"mobileNo\": \"01712345678\",\n    \"userCode\": \"1786@CORP1522\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Verify OTP for Submit Bulk File by Checker",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Schema is valid\", function () {\r",
+							"  var schema = {\r",
+							"    type: \"object\",\r",
+							"    properties: {\r",
+							"      version: { type: \"string\" },\r",
+							"      timestamp: { type: \"string\" },\r",
+							"      status: { type: \"string\" },\r",
+							"      responseCode: { type: \"number\" },\r",
+							"      responseMessage: { type: \"string\" },\r",
+							"      payload: { type: \"null\" },\r",
+							"      eventRights: { type: \"null\" }\r",
+							"    },\r",
+							"    required: [\"version\", \"timestamp\", \"status\", \"responseCode\", \"responseMessage\", \"payload\", \"eventRights\"]\r",
+							"  };\r",
+							"\r",
+							"  var response = pm.response.json();\r",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwtToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"updatedBy\": \"1786@CORP1522\",\r\n    \"userRole\": \"Role for ABCD,\",\r\n    \"status\": \"A\",\r\n    \"remarks\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/login/password-otp/verify-otp",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"login",
+						"password-otp",
+						"verify-otp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Checked by Checker",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// status code validation\r",
+							"pm.test(\"Response code status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"updatedBy\": \"1785@CORP1522\",\r\n    \"userRole\": \"CHECKER,\",\r\n    \"status\": \"A\",\r\n    \"remarks\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{scheme}}{{host}}:{{port}}{{common_path}}/bulk-upload-file/{{recordId}}",
+					"host": [
+						"{{scheme}}{{host}}"
+					],
+					"port": "{{port}}{{common_path}}",
+					"path": [
+						"bulk-upload-file",
+						"{{recordId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
