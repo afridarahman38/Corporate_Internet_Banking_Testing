@@ -42,7 +42,7 @@ This repository documents the comprehensive testing process for a **Corporate In
 - Performance Testing: Conducted stress and load testing to ensure reliability during peak usage.
 
 ## Tools and Techniques Used
-**Testing Tools:** Microsoft Azure, Selenium, and JMeter.
+**Testing Tools:** Microsoft Azure, Postman, Selenium, and JMeter.
 
 **Programming Language:** Java for automation and scripting.
 
@@ -56,6 +56,8 @@ This repository documents the comprehensive testing process for a **Corporate In
 **Performance Metrics:** Reports and analysis from stress and load testing.
 
 **Security Assessment Reports:** Results from vulnerability and compliance testing.
+
+**API Test:** Conducted API testing using Postman for validate the API
 
 ## How to Contribute
 - Clone the repository:
