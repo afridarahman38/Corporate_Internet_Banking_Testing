@@ -70,5 +70,5 @@ git clone https://github.com/your-repo/corporate-internet-banking-testing.git
 - Review open issues or suggest new improvements.
 - Submit pull requests with detailed explanations.
 
-#### Feel free to contribute, open issues, or provide feedback to enhance the quality of the ** Palli Sanchay Bank(PSB) ** application!
+#### Feel free to contribute, open issues, or provide feedback to enhance the quality!
 
